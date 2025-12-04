@@ -1,12 +1,12 @@
 from fastapi import Response, Depends, HTTPException, status, APIRouter
 from authx import AuthX
-from core.config import config
-from schemas import LoginSchema, LoginResponse, SignupSchema, SignupResponse
-from db import get_db
+from app.core.config import config
+from app.schemas import LoginSchema, LoginResponse, SignupSchema, SignupResponse
+from app.db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from models import User
+from app.models import User
 from passlib.context import CryptContext
 
 router = APIRouter(prefix="", tags=["auth"])
@@ -88,3 +88,8 @@ async def login(
     security.set_access_cookies(token, response)
 
     return LoginResponse(message="Login successfull")
+
+@router.post("/logout")
+async def logout(response: Response):
+    security.unset_access_cookies(response)
+    return {"message": "Logged out seccessfully"}
