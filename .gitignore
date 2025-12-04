@@ -1,0 +1,11 @@
+.env
+friendly-octo-spork.db
+venv
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+.idea/
+.vscode/
+__pycache__
+*.pyc 
+*.sqlite
