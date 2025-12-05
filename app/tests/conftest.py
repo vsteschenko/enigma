@@ -1,17 +1,13 @@
-import asyncio
-import pytest
-import pytest_asyncio
+import asyncio, pytest, pytest_asyncio, os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from app.db import get_db
 from app.main import app
-from pathlib import Path
 from app.models import Base
+from sqlalchemy.pool import NullPool
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-DB_PATH = ROOT_DIR / "friendly-octo-spork-dev.db"
-TEST_DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
+TEST_DATABASE_URL = (f"postgresql+asyncpg://ledger_user_dev:{os.environ.get('DB_PASSWORD')}@localhost:5432/ledger_dev")
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)
 
 @pytest.fixture(scope="session")
