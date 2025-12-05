@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Depends
 import uvicorn
-from app.authorisation import router as auth_router, security
+from app.routers.authorisation import router as auth_router, security
+from app.routers.transactions import router as tx_router
 from app.models import Base
 from app.db import engine
 
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(tx_router)
 
 @app.on_event("startup")
 async def on_startup():
