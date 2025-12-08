@@ -39,5 +39,6 @@ class TxCreateResponseSchema(BaseModel):
     transaction: TxOut
 
 class TxListResponseSchema(BaseModel):
+    message: str
     transactions: List[TxOut]
     
