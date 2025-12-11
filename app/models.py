@@ -14,10 +14,7 @@ class User(Base):
     verification_token: Mapped[str | None] = mapped_column(String, nullable=True)
     reset_token: Mapped[str | None] = mapped_column(String, nullable=True)
     delete_token: Mapped[str | None] = mapped_column(String, nullable=True)
-    transactions: Mapped[list["Transactions"]] = relationship(
-        back_populates="user",
-        cascade="all, delete-orphan",
-    )
+    transactions: Mapped[list["Transactions"]] = relationship(back_populates="user", cascade="all, delete-orphan",)
 
 class Transactions(Base):
     __tablename__ = "transactions"
@@ -28,6 +25,4 @@ class Transactions(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False,)
     type: Mapped[str] = mapped_column(String, nullable=False)
     place: Mapped[str] = mapped_column(String(100), default="Unknown")
-    user: Mapped["User"] = relationship(
-        back_populates="transactions",
-    )
+    user: Mapped["User"] = relationship(back_populates="transactions",)

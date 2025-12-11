@@ -30,6 +30,9 @@ class TxBase(BaseModel):
 class TxCreateSchema(TxBase):
     pass
 
+class TxUpdateSchema(TxBase):
+    pass
+
 class TxOut(TxBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -41,4 +44,8 @@ class TxCreateResponseSchema(BaseModel):
 class TxListResponseSchema(BaseModel):
     message: str
     transactions: List[TxOut]
+
+class TxUpdateResponseSchema(BaseModel):
+    message: str
+    transaction: TxOut
     
