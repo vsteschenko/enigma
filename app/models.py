@@ -1,6 +1,10 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, ForeignKey, Integer, Float, DateTime
+from sqlalchemy import String, Boolean, ForeignKey, Integer, Float, DateTime, CheckConstraint
 from datetime import datetime, timezone
+from app.utils.categories import EXPENSE_CATEGORIES, INCOME_CATEGORIES
+
+expense_keys = "', '".join(EXPENSE_CATEGORIES)
+income_keys = "', '".join(INCOME_CATEGORIES)
 
 class Base(DeclarativeBase):
     pass
@@ -18,6 +22,13 @@ class User(Base):
 
 class Transactions(Base):
     __tablename__ = "transactions"
+    __table_args__ = (
+        CheckConstraint(
+            f"(type = 'expense' AND category IN ('{expense_keys}')) OR"
+            f"(type = 'income' AND category IN ('{income_keys}'))",
+            name="ck_transactions_category_allowed",
+        ),
+    )
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)

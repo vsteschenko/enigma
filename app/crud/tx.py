@@ -33,3 +33,4 @@ async def update_tx(db: AsyncSession, tx_id: int, user_id: int, **data) -> Trans
     except Exception:
         await db.rollback()
         raise
+

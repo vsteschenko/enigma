@@ -46,7 +46,8 @@ async def update_tx(
     except(TypeError, ValueError):
         raise HTTPException(status_code=401, detail="Invalid token")
     try:
-        tx = await update_tx_crud(db, tx_id=tx_id, user_id=user_id, **payload.model_dump())
+        data = payload.model_dump(exclude_unset=True, exclude_none=True)
+        tx = await update_tx_crud(db, tx_id=tx_id, user_id=user_id, **data)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     return {"message": "Transactions updated", "transaction": tx}

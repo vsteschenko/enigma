@@ -30,8 +30,33 @@ class TxBase(BaseModel):
 class TxCreateSchema(TxBase):
     pass
 
-class TxUpdateSchema(TxBase):
-    pass
+class TxUpdateSchema(BaseModel):
+    type: Optional[Literal["expense","income"]] = None
+    amount: Optional[float] = None
+    category: Optional[str] = None
+    timestamp: Optional[datetime] = None
+    place: Optional[str] = None
+
+    @field_validator("amount")
+    def normalise_amount(cls, v, info):
+        if v is None:
+            return v
+        tx_type = info.data.get("type")
+        if tx_type not in ("expense", "income"):
+            raise ValueError("type is required")
+        return -abs(v) if tx_type == "expense" else abs(v)
+    
+    @field_validator("category")
+    def validate_category(cls, v, info):
+        if v is None:
+            return v
+        tx_type = info.data.get("type")
+        if tx_type not in ("expense", "income"):
+            raise ValueError("type is required")
+        allowed = EXPENSE_CATEGORIES if tx_type == "expense" else INCOME_CATEGORIES
+        if v not in allowed:
+            raise ValueError(f"category {v} not allowed")
+        return v
 
 class TxOut(TxBase):
     model_config = ConfigDict(from_attributes=True)
