@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
-from app.schemas.tx import TxCreateSchema, TxCreateResponseSchema, TxListResponseSchema, TxUpdateSchema, TxUpdateResponseSchema
-from app.crud.tx import create_tx, all_txs, update_tx as update_tx_crud
+from app.schemas.tx import TxCreateSchema, TxCreateResponseSchema, TxListResponseSchema, TxUpdateSchema, TxUpdateResponseSchema, TxDeleteResponseSchema
+from app.crud.tx import create_tx, all_txs, update_tx as update_tx_crud, delete_tx as delete_tx_crud
 from app.services.auth import security
 from authx.schema import TokenPayload
 
@@ -51,3 +51,19 @@ async def update_tx(
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     return {"message": "Transactions updated", "transaction": tx}
+
+@router.delete("/{tx_id}", response_model=TxDeleteResponseSchema, status_code=202)
+async def delete_tx(
+    tx_id: int,
+    db: AsyncSession = Depends(get_db),
+    token: TokenPayload = Depends(security.access_token_required),
+):
+    try:
+        user_id = int(token.sub)
+    except(TypeError, ValueError):
+        raise HTTPException(status_code=401, detail="Invalid token")
+    try:
+        tx = await delete_tx_crud(db, tx_id=tx_id, user_id=user_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    return {"message": "Transaction deleted", "transaction": tx}

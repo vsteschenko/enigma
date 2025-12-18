@@ -73,4 +73,10 @@ class TxListResponseSchema(BaseModel):
 class TxUpdateResponseSchema(BaseModel):
     message: str
     transaction: TxOut
-    
+
+class TxDeleteSchema(BaseModel):
+    pass
+
+class TxDeleteResponseSchema(BaseModel):
+    message: str
+    transaction: TxOut    

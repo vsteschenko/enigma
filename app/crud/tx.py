@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from app.models import Transactions
 
 async def create_tx(db: AsyncSession, **data) -> Transactions:
@@ -34,3 +34,17 @@ async def update_tx(db: AsyncSession, tx_id: int, user_id: int, **data) -> Trans
         await db.rollback()
         raise
 
+async def delete_tx(db: AsyncSession, tx_id: int, user_id: int) -> Transactions:
+    res = await db.execute(
+        select(Transactions).where(Transactions.id == tx_id, Transactions.user_id == user_id,)
+    )
+    tx = res.scalar_one_or_none()
+    if tx is None:
+        raise ValueError("Transaction not found")
+    try:
+        await db.delete(tx)
+        await db.commit()
+        return tx
+    except Exception:
+        await db.rollback()
+        raise
