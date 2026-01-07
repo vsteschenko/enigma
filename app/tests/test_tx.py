@@ -11,7 +11,7 @@ async def create_tx(auth_client):
     data = res.json()
     assert data["message"] == "Transaction created"
     tx = data["transaction"]
-    assert tx["amount"] == -25
+    assert tx["amount"] == -25.00
     return tx
 
 @pytest.mark.asyncio
@@ -33,14 +33,14 @@ async def test_get_all_txs(auth_client):
     assert fetched is not None
 
     assert fetched["type"] == "expense"
-    assert fetched["amount"] == -25
+    assert fetched["amount"] == -25.00
     assert fetched["category"] == "grocery"
     assert fetched["place"] == "DELHAIZE"
 
 @pytest.mark.asyncio
 async def test_update_tx(auth_client):
     tx = await create_tx(auth_client)
-    assert tx["amount"] == -25
+    assert tx["amount"] == -25.00
     tx_id = tx["id"]
     
     res = await auth_client.put(f"/transactions/{tx_id}", json={

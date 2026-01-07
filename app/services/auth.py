@@ -24,7 +24,7 @@ async def signup(db, email: str, password: str):
 async def login(db, email: str, password: str):
     email = email.lower().strip()
     user = await get_user_by_email(db, email)
-    if user is None or not verify_password(password, user.password):
+    if user is None or not verify_password(password, user.hashed_password):
         return None, "Invalid email or password"
     token = security.create_access_token(uid=str(user.id))
     return user, token

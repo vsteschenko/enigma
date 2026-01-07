@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
 from typing import Literal, Optional, List
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, Field, field_validator, ConfigDict, field_serializer
 from app.utils.categories import EXPENSE_CATEGORIES, INCOME_CATEGORIES
+from decimal import Decimal
 
 class TxBase(BaseModel):
     type: Literal["expense", "income"]
-    amount: float
+    amount: Decimal
     category: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     place: Optional[str] = None
@@ -32,7 +33,7 @@ class TxCreateSchema(TxBase):
 
 class TxUpdateSchema(BaseModel):
     type: Optional[Literal["expense","income"]] = None
-    amount: Optional[float] = None
+    amount: Optional[Decimal] = None
     category: Optional[str] = None
     timestamp: Optional[datetime] = None
     place: Optional[str] = None
@@ -61,6 +62,9 @@ class TxUpdateSchema(BaseModel):
 class TxOut(TxBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+    @field_serializer("amount")
+    def serializer_amount(self, v: Decimal):
+        return float(v)
 
 class TxCreateResponseSchema(BaseModel):
     message: str
