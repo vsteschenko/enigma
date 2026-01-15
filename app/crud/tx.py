@@ -13,8 +13,8 @@ async def create_tx(db: AsyncSession, **data) -> Transactions:
         await db.rollback()
         raise
 
-async def all_txs(db: AsyncSession, user_id: int):
-    res = await db.execute(select(Transactions).where(Transactions.user_id == user_id))
+async def all_txs(db: AsyncSession, user_id: int, limit: int = 50):
+    res = await db.execute(select(Transactions).where(Transactions.user_id == user_id).limit(limit))
     return res.scalars().all()
 
 async def update_tx(db: AsyncSession, tx_id: int, user_id: int, **data) -> Transactions:
